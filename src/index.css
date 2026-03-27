@@ -1,0 +1,353 @@
+@import "tailwindcss";
+
+/* ===== Custom Properties ===== */
+:root {
+  --color-green: #2E7D32;
+  --color-green-light: #4CAF50;
+  --color-green-dark: #1B5E20;
+  --color-yellow: #F9A825;
+  --color-yellow-light: #FDD835;
+  --color-yellow-dark: #F57F17;
+  --color-dark: #0a0a0a;
+  --color-text: #1a1a1a;
+  --color-text-light: #555;
+  --color-white: #ffffff;
+  --color-off-white: #fafafa;
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  /* GSAP handles smooth scroll */
+  overflow-x: hidden;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ===== Typography Tokens ===== */
+.text-display {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 8vw, 9rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.text-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-subheadline {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.text-body-large {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--color-text-light);
+}
+
+/* ===== Section Base ===== */
+.section-full {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.section-padding {
+  padding: 5rem 4rem;
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* ===== Accent Decorations ===== */
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: var(--color-green);
+  display: inline-block;
+}
+
+.accent-line-yellow {
+  width: 60px;
+  height: 3px;
+  background: var(--color-yellow);
+  display: inline-block;
+}
+
+.accent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-green);
+  display: inline-block;
+}
+
+/* ===== Split Text Chars ===== */
+.char-wrap {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.char-wrap .char {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+/* ===== Reveal Animations (GSAP driven) ===== */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(60px);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(60px);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ===== Gradient Overlays ===== */
+.gradient-dark-bottom {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.gradient-dark-full {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-off-white);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-green);
+  border-radius: 3px;
+}
+
+/* ===== Form Styles ===== */
+.form-input {
+  width: 100%;
+  padding: 1rem 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.3s ease;
+  color: var(--color-text);
+}
+
+.form-input:focus {
+  border-bottom-color: var(--color-green);
+}
+
+.form-input::placeholder {
+  color: #aaa;
+}
+
+.form-textarea {
+  resize: none;
+  min-height: 120px;
+}
+
+/* ===== Button ===== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-green);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  background: var(--color-green-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(46, 125, 50, 0.3);
+}
+
+/* ===== Horizontal Scroll ===== */
+.horizontal-scroll-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+}
+
+.horizontal-panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== Nav Styles ===== */
+.nav-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: all 0.4s ease;
+}
+
+.nav-transparent {
+  background: transparent;
+}
+
+.nav-solid {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== Counter Animation ===== */
+.counter-value {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 800;
+  color: var(--color-green);
+  line-height: 1;
+}
+
+/* ===== Parallax Image Container ===== */
+.parallax-img-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.parallax-img-container img {
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+/* ===== 3D Transform Utilities ===== */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* ===== Smooth Section Transitions ===== */
+section {
+  will-change: transform, opacity;
+}
+
+/* ===== Selection Styling ===== */
+::selection {
+  background: rgba(46, 125, 50, 0.2);
+  color: var(--color-dark);
+}
+
+/* ===== Smooth Global Transitions ===== */
+.section-full,
+.horizontal-panel {
+  transition: background 0.6s ease;
+}
+
+/* ===== Reduced Motion Support ===== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
