@@ -94,9 +94,9 @@ export default function Navbar() {
 
                 {/* Logo */}
                 <Link to="/" style={{
-                    fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800,
+                    fontFamily: 'var(--font-heading)', fontSize: isHomePage ? '1.5rem' : '1.2rem', fontWeight: 800,
                     color: isScrolled ? 'var(--color-dark)' : 'var(--color-white)',
-                    letterSpacing: '-0.02em', transition: 'color 0.3s ease', zIndex: 1001, textDecoration: 'none',
+                    letterSpacing: '-0.02em', transition: 'color 0.3s ease, font-size 0.3s ease', zIndex: 1001, textDecoration: 'none',
                 }}>
                     SUDHAMA<span style={{ color: 'var(--color-green)', fontWeight: 400 }}> GROUPS</span>
                 </Link>
@@ -303,11 +303,19 @@ export default function Navbar() {
                     ))}
                 </div>
                 <Link to="/capacity" onClick={() => setMenuOpen(false)}
-                    style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--color-green)', textDecoration: 'none' }}>
+                    style={{
+                        fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: 700,
+                        color: 'var(--color-dark)', textTransform: 'uppercase', letterSpacing: '0.05em',
+                        textDecoration: 'none',
+                    }}>
                     Capacity
                 </Link>
                 <Link to="/achievements" onClick={() => setMenuOpen(false)}
-                    style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--color-yellow-dark)', textDecoration: 'none' }}>
+                    style={{
+                        fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: 700,
+                        color: 'var(--color-dark)', textTransform: 'uppercase', letterSpacing: '0.05em',
+                        textDecoration: 'none',
+                    }}>
                     Achievements
                 </Link>
             </div>
