@@ -88,7 +88,7 @@ export default function ProductExperience() {
                     scrollTrigger: {
                         trigger: sectionRef.current,
                         start: 'top top',
-                        end: () => `+=${totalWidth}`,
+                        end: () => `+=${totalWidth - window.innerWidth}`,
                         pin: true,
                         scrub: 1,
                         anticipatePin: 1,
@@ -112,7 +112,7 @@ export default function ProductExperience() {
             <div
                 ref={headerRef}
                 style={{
-                    padding: '10vh 8vw 5vh',
+                    padding: '3vh 8vw 0.5vh',
                     opacity: 0,
                     transformStyle: 'preserve-3d',
                     position: 'relative',
