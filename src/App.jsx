@@ -1,63 +1,59 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import About from './components/About'
-import BranchSection from './components/BranchSection'
-import ProductExperience from './components/ProductExperience'
-import WhyChooseUs from './components/WhyChooseUs'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
 import Preloader from './components/Preloader'
+import PageTransition from './components/PageTransition'
+import HomePage from './pages/HomePage'
+import BranchPage from './pages/BranchPage'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const branches = [
-    {
-        id: 'menaka',
-        name: 'Menaka Textiles',
-        tagline: 'Where Tradition Meets Innovation',
-        description: 'Crafting premium fabrics with decades of expertise. Menaka Textiles stands at the forefront of traditional weaving, blending age-old techniques with modern manufacturing excellence to produce textiles that define quality.',
-        accent: '#2E7D32',
-        stats: { years: 25, products: 500, clients: 200 },
-        bgGradient: 'linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #4CAF50 100%)',
-    },
-    {
-        id: 'sudhama',
-        name: 'Sudhama Hosieries',
-        tagline: 'Comfort Woven Into Every Thread',
-        description: 'Specializing in premium hosiery products that combine comfort with durability. From everyday essentials to specialized garments, Sudhama Hosieries delivers unmatched quality that you can feel.',
-        accent: '#F9A825',
-        stats: { years: 20, products: 300, clients: 150 },
-        bgGradient: 'linear-gradient(135deg, #F57F17 0%, #F9A825 50%, #FDD835 100%)',
-    },
-    {
-        id: 'gptextiles',
-        name: 'G P Textiles',
-        tagline: 'Engineering the Future of Fabric',
-        description: 'Pushing boundaries in textile manufacturing with cutting-edge technology and sustainable practices. G P Textiles creates fabrics that set new industry standards for quality, innovation, and environmental responsibility.',
-        accent: '#2E7D32',
-        stats: { years: 15, products: 400, clients: 180 },
-        bgGradient: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%)',
-    },
-]
-
 function App() {
-    const appRef = useRef(null)
-    const [loading, setLoading] = useState(true)
+    const [initialLoading, setInitialLoading] = useState(true)
+    const [isTransitioning, setIsTransitioning] = useState(false)
+    const [displayLocation, setDisplayLocation] = useState(null)
+    const location = useLocation()
 
+    // Set initial display location
     useEffect(() => {
-        if (!loading) {
-            // Refresh ScrollTrigger after loader completes
+        if (!displayLocation) {
+            setDisplayLocation(location)
+        }
+    }, [location, displayLocation])
+
+    // Handle route changes with custom page transition
+    useEffect(() => {
+        if (displayLocation && location.pathname !== displayLocation.pathname) {
+            setIsTransitioning(true)
+
+            // Wait for cover animation, then swap route
+            setTimeout(() => {
+                // Kill old scroll triggers
+                ScrollTrigger.getAll().forEach(t => t.kill())
+                window.scrollTo(0, 0)
+                setDisplayLocation(location)
+
+                // Wait for unmount/mount then reveal new page
+                setTimeout(() => {
+                    setIsTransitioning(false)
+                }, 100)
+            }, 1000) // 1s syncs with PageTransition in-animation duration
+        }
+    }, [location, displayLocation])
+
+    // Initial Preloader Logic
+    useEffect(() => {
+        if (!initialLoading) {
             const timeout = setTimeout(() => {
                 ScrollTrigger.refresh()
             }, 300)
-
             return () => clearTimeout(timeout)
         }
-    }, [loading])
+    }, [initialLoading])
 
+    // Cleanup on unmount
     useEffect(() => {
         return () => {
             ScrollTrigger.getAll().forEach(t => t.kill())
@@ -66,27 +62,23 @@ function App() {
 
     return (
         <>
-            {loading && <Preloader onComplete={() => setLoading(false)} />}
+            <PageTransition isVisible={isTransitioning} />
+            {initialLoading && <Preloader onComplete={() => setInitialLoading(false)} />}
+
             <div
-                ref={appRef}
-                id="smooth-wrapper"
+                id="app-container"
                 style={{
-                    opacity: loading ? 0 : 1,
+                    opacity: initialLoading ? 0 : 1,
                     transition: 'opacity 0.3s ease',
                 }}
             >
                 <Navbar />
-                <main>
-                    <Hero />
-                    <About />
-                    {branches.map((branch, index) => (
-                        <BranchSection key={branch.id} branch={branch} index={index} />
-                    ))}
-                    <ProductExperience />
-                    <WhyChooseUs />
-                    <Contact />
-                </main>
-                <Footer />
+                {displayLocation && (
+                    <Routes location={displayLocation}>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/:slug" element={<BranchPage />} />
+                    </Routes>
+                )}
             </div>
         </>
     )

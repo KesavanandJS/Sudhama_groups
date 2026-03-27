@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -12,6 +13,7 @@ export default function BranchSection({ branch, index }) {
     const overlayRef = useRef(null)
     const numberRef = useRef(null)
     const orbRef = useRef(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -376,6 +378,7 @@ export default function BranchSection({ branch, index }) {
                         gap: '3rem',
                         justifyContent: isEven ? 'flex-start' : 'flex-end',
                         flexWrap: 'wrap',
+                        marginBottom: '3rem',
                     }}
                 >
                     {[
@@ -417,6 +420,28 @@ export default function BranchSection({ branch, index }) {
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* Explore Button */}
+                <div style={{
+                    transformStyle: 'preserve-3d',
+                    opacity: 1,
+                }}>
+                    <button
+                        onClick={() => navigate(branch.route)}
+                        className="btn-primary"
+                        style={{
+                            background: branch.accent === '#F9A825' ? 'var(--color-yellow)' : 'var(--color-green)',
+                            color: branch.accent === '#F9A825' ? 'var(--color-dark)' : 'var(--color-white)',
+                            transformStyle: 'preserve-3d',
+                        }}
+                    >
+                        Explore Complete Details
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </section>
