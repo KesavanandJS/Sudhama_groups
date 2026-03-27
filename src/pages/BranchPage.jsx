@@ -15,6 +15,9 @@ export default function BranchPage() {
     const heroRef = useRef(null)
     const heroTextRef = useRef(null)
     const heroImgRef = useRef(null)
+    const gallerySectionRef = useRef(null)
+    const galleryWrapperRef = useRef(null)
+    const galleryPanelsRef = useRef([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -29,21 +32,21 @@ export default function BranchPage() {
                 { opacity: 0, x: -40 },
                 { opacity: 1, x: 0, duration: 1, ease: 'power3.out' }
             )
-            .fromTo('.hero-title',
-                { opacity: 0, y: 100, rotateX: -30, filter: 'blur(20px)', transformPerspective: 1000 },
-                { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 1.4, ease: 'expo.out' },
-                '-=0.4'
-            )
-            .fromTo('.hero-tagline',
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
-                '-=0.6'
-            )
-            .fromTo('.hero-scroll-cue',
-                { opacity: 0 },
-                { opacity: 1, duration: 0.8 },
-                '-=0.3'
-            )
+                .fromTo('.hero-title',
+                    { opacity: 0, y: 100, rotateX: -30, filter: 'blur(20px)', transformPerspective: 1000 },
+                    { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 1.4, ease: 'expo.out' },
+                    '-=0.4'
+                )
+                .fromTo('.hero-tagline',
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
+                    '-=0.6'
+                )
+                .fromTo('.hero-scroll-cue',
+                    { opacity: 0 },
+                    { opacity: 1, duration: 0.8 },
+                    '-=0.3'
+                )
 
             // ── Hero image parallax ──
             gsap.to(heroRef.current, {
@@ -61,8 +64,10 @@ export default function BranchPage() {
             gsap.utils.toArray('.stat-item').forEach((el, i) => {
                 gsap.fromTo(el,
                     { opacity: 0, y: 30, scale: 0.85 },
-                    { opacity: 1, y: 0, scale: 1, duration: 0.8, delay: i * 0.12, ease: 'back.out(1.5)',
-                      scrollTrigger: { trigger: el, start: 'top 90%' } }
+                    {
+                        opacity: 1, y: 0, scale: 1, duration: 0.8, delay: i * 0.12, ease: 'back.out(1.5)',
+                        scrollTrigger: { trigger: el, start: 'top 90%' }
+                    }
                 )
             })
 
@@ -96,8 +101,10 @@ export default function BranchPage() {
             )
             gsap.fromTo('.story-body',
                 { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
-                  scrollTrigger: { trigger: '.story-body', start: 'top 85%' } }
+                {
+                    opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
+                    scrollTrigger: { trigger: '.story-body', start: 'top 85%' }
+                }
             )
 
             // ── Capability rows: alternating 3D slide ──
@@ -129,9 +136,49 @@ export default function BranchPage() {
             // ── CTA section: scale reveal ──
             gsap.fromTo('.cta-content',
                 { opacity: 0, y: 60, scale: 0.95 },
-                { opacity: 1, y: 0, scale: 1, duration: 1.4, ease: 'power4.out',
-                  scrollTrigger: { trigger: '.cta-content', start: 'top 80%' } }
+                {
+                    opacity: 1, y: 0, scale: 1, duration: 1.4, ease: 'power4.out',
+                    scrollTrigger: { trigger: '.cta-content', start: 'top 80%' }
+                }
             )
+
+            // ── Gallery Horizontal Scroll ──
+            const galleryPanels = galleryPanelsRef.current.filter(Boolean)
+            if (galleryPanels.length > 0 && galleryWrapperRef.current && gallerySectionRef.current) {
+                const totalWidth = galleryPanels.length * window.innerWidth
+                gsap.to(galleryWrapperRef.current, {
+                    x: -(totalWidth - window.innerWidth),
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: gallerySectionRef.current,
+                        start: 'top top',
+                        end: () => `+=${totalWidth}`,
+                        pin: true,
+                        scrub: 1,
+                        anticipatePin: 1,
+                    },
+                })
+
+                // Add parallax to images inside panels
+                galleryPanels.forEach((panel, i) => {
+                    const img = panel.querySelector('.gallery-img')
+                    if (img) {
+                        gsap.fromTo(img,
+                            { xPercent: -10 },
+                            {
+                                xPercent: 10,
+                                ease: 'none',
+                                scrollTrigger: {
+                                    trigger: gallerySectionRef.current,
+                                    start: () => `top top-=${i * window.innerWidth}`,
+                                    end: () => `+=${window.innerWidth}`,
+                                    scrub: true,
+                                }
+                            }
+                        )
+                    }
+                })
+            }
 
         }, pageRef)
 
@@ -536,67 +583,94 @@ export default function BranchPage() {
                 <Marquee3D items={[...branch.details.products].reverse()} speed={1.4} reverse={true} accent={branch.accent} />
             </section>
 
-            {/* ═══════════ PHOTO GALLERY — mosaic with 3D hover ═══════════ */}
-            <section style={{ padding: '10vh clamp(2rem, 6vw, 6rem)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '4rem' }}>
-                    <span style={{ width: '40px', height: '2px', background: branch.accent }} />
-                    <span style={{ textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.72rem', fontWeight: 700, color: branch.accent }}>From The Floor</span>
+            {/* ═══════════ PHOTO GALLERY ═══════════ */}
+            <section ref={gallerySectionRef} className="mobile-responsive-gallery" style={{ overflow: 'hidden', background: isDark ? '#080808' : '#fafafa', position: 'relative' }}>
+                <style>{`
+                    .mobile-responsive-gallery {
+                        height: 100vh;
+                        width: 100%;
+                    }
+                    @media (max-width: 768px) {
+                        .mobile-responsive-gallery {
+                            height: 70vh !important;
+                        }
+                    }
+                `}</style>
+                <div style={{
+                    position: 'absolute',
+                    top: '10vh', left: '8vw',
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                        <span style={{ width: '40px', height: '2px', background: branch.accent }} />
+                        <span style={{ textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.72rem', fontWeight: 700, color: branch.accent }}>From The Floor</span>
+                    </div>
+                    <h2 style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontSize: 'clamp(2rem, 5vw, 4rem)',
+                        fontWeight: 800, color: fg
+                    }}></h2>
                 </div>
 
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
-                    gridAutoRows: '300px',
-                    gap: '0.8rem',
-                }}>
-                    {branch.images.slice(0, 8).map((img, i) => {
-                        const isFeature = i === 0
-                        const isTall = i === 3
-                        return (
-                            <div key={i} className="gallery-tile" style={{
-                                gridColumn: isFeature ? 'span 2' : 'span 1',
-                                gridRow: isFeature || isTall ? 'span 2' : 'span 1',
-                                overflow: 'hidden', borderRadius: '3px',
-                                position: 'relative', cursor: 'pointer',
-                                transformStyle: 'preserve-3d',
+                <div
+                    ref={galleryWrapperRef}
+                    className="horizontal-scroll-wrapper"
+                    style={{
+                        display: 'flex',
+                        height: '100%', 
+                        willChange: 'transform',
+                    }}
+                >
+                    {branch.images.map((img, i) => (
+                        <div
+                            key={i}
+                            ref={(el) => galleryPanelsRef.current[i] = el}
+                            className="horizontal-panel"
+                            style={{
+                                width: '100vw',
+                                height: '100%',
+                                position: 'relative',
+                                overflow: 'hidden',
                             }}
-                                onMouseMove={handleTilt}
-                                onMouseLeave={e => {
-                                    handleTiltLeave(e)
-                                    gsap.to(e.currentTarget.querySelector('img'), { scale: 1, duration: 0.6 })
-                                    gsap.to(e.currentTarget.querySelector('.tile-overlay'), { opacity: 0, duration: 0.4 })
+                        >
+                            <img
+                                src={img}
+                                alt={`Gallery ${i + 1}`}
+                                className="gallery-img"
+                                style={{
+                                    width: '100%', 
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    position: 'absolute',
+                                    transform: 'scale(1.25)', // buffer for parallax tracking bounds
                                 }}
-                                onMouseEnter={e => {
-                                    gsap.to(e.currentTarget.querySelector('img'), { scale: 1.08, duration: 0.7, ease: 'power2.out' })
-                                    gsap.to(e.currentTarget.querySelector('.tile-overlay'), { opacity: 1, duration: 0.4 })
-                                }}
-                            >
-                                <img src={img} alt={`Gallery ${i + 1}`} style={{
-                                    width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                                }} />
-                                <div className="tile-overlay" style={{
-                                    position: 'absolute', inset: 0, opacity: 0,
-                                    background: `linear-gradient(135deg, ${branch.accent}44 0%, rgba(0,0,0,0.5) 100%)`,
-                                }} />
-                                {/* Accent corner */}
-                                <div style={{
-                                    position: 'absolute', bottom: 0, left: 0,
-                                    width: '3px', height: '40%', background: branch.accent,
-                                    opacity: 0.6,
-                                }} />
-                                {/* Image index */}
-                                <div style={{
-                                    position: 'absolute', top: '0.8rem', right: '0.8rem',
-                                    fontSize: '0.6rem', letterSpacing: '0.15em', fontWeight: 700,
-                                    color: 'rgba(255,255,255,0.5)',
-                                    background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(6px)',
-                                    padding: '0.25rem 0.5rem', borderRadius: '2px',
-                                }}>
-                                    {String(i + 1).padStart(2, '0')}
-                                </div>
+                            />
+                            <div style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: `linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)`,
+                                pointerEvents: 'none',
+                            }} />
+                            {/* Index badge */}
+                            <div style={{
+                                position: 'absolute',
+                                bottom: '2.5rem',
+                                left: '2.5rem',
+                                fontFamily: 'var(--font-heading)',
+                                fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+                                fontWeight: 900,
+                                color: '#fff',
+                                opacity: 0.9,
+                                lineHeight: 1,
+                                textShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                                pointerEvents: 'none',
+                            }}>
+                                {String(i + 1).padStart(2, '0')}
+                                <span style={{ fontSize: '0.4em', color: branch.accent, opacity: 0.8 }}> / {String(branch.images.length).padStart(2, '0')}</span>
                             </div>
-                        )
-                    })}
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -673,9 +747,20 @@ export default function BranchPage() {
                     0%, 100% { opacity: 0.4; transform: scaleY(1); }
                     50% { opacity: 1; transform: scaleY(1.2); }
                 }
+                /* Hide scrollbar for mobile gallery */
+                .gallery-mobile div::-webkit-scrollbar { display: none; }
+
+                /* Desktop: show mosaic, hide mobile scroll */
+                .gallery-desktop { display: block; }
+                .gallery-mobile  { display: none; }
+
                 @media (max-width: 800px) {
                     .story-section { grid-template-columns: 1fr !important; }
                     .cap-row { grid-template-columns: 1fr !important; direction: ltr !important; min-height: unset !important; }
+                    .gallery-desktop { display: none; }
+                    .gallery-mobile  { display: block; }
+                    /* fix hero clipped secondary img on mobile */
+                    .hero-secondary-img { display: none !important; }
                 }
             `}</style>
         </div>
