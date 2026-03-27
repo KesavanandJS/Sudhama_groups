@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import Navbar from './components/Navbar'
 import Preloader from './components/Preloader'
 import PageTransition from './components/PageTransition'
 import HomePage from './pages/HomePage'
 import BranchPage from './pages/BranchPage'
+import CapacityPage from './pages/CapacityPage'
+import AchievementsPage from './pages/AchievementsPage'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
 function App() {
     const [initialLoading, setInitialLoading] = useState(true)
@@ -53,6 +56,24 @@ function App() {
         }
     }, [initialLoading])
 
+    // Scroll to section when navigating home from a branch page
+    useEffect(() => {
+        if (location.pathname === '/' && location.state?.scrollTo) {
+            const target = location.state.scrollTo
+            // Wait for transition + page mount then scroll
+            setTimeout(() => {
+                const el = document.querySelector(target)
+                if (el) {
+                    gsap.to(window, {
+                        duration: 1.2,
+                        scrollTo: { y: el, offsetY: 0 },
+                        ease: 'power3.inOut',
+                    })
+                }
+            }, 1300) // after 1s transition + small buffer
+        }
+    }, [location])
+
     // Cleanup on unmount
     useEffect(() => {
         return () => {
@@ -76,6 +97,8 @@ function App() {
                 {displayLocation && (
                     <Routes location={displayLocation}>
                         <Route path="/" element={<HomePage />} />
+                        <Route path="/capacity" element={<CapacityPage />} />
+                        <Route path="/achievements" element={<AchievementsPage />} />
                         <Route path="/:slug" element={<BranchPage />} />
                     </Routes>
                 )}
