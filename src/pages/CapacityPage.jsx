@@ -134,8 +134,8 @@ export default function CapacityPage() {
                 background: 'linear-gradient(135deg, #0a0a0a 0%, #0f2113 60%, #1B5E20 100%)',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'flex-end',
-                padding: '0 8vw 8vh',
+                justifyContent: 'center',
+                padding: '18vh 8vw 8vh',
                 position: 'relative',
                 overflow: 'hidden',
             }}>
